@@ -8,7 +8,7 @@ env:
   AWS_REGION: us-east-1
   EB_APP_NAME: LKS-Leaderboard-App
   EB_ENV_NAME: LKS-Leaderboard-Env
-  S3_BUCKET: debug-123123    # GANTI dengan bucket Beanstalk Anda
+  S3_BUCKET: elasticbeanstalk-us-east-1-916470729977    # GANTI dengan bucket Beanstalk Anda
 
 jobs:
   deploy:
@@ -17,6 +17,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Generate deployment version
+      id: version
+      run: |
+        DEPLOY_ID=$(date +%Y%m%d%H%M%S)
+        echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
+        echo "version_label=v-$DEPLOY_ID" >> "$GITHUB_OUTPUT"
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -41,19 +48,17 @@ jobs:
 
     - name: Upload to S3
       run: |
-        aws s3 cp deploy.zip s3://${{ env.S3_BUCKET }}/deploy.zip
+        aws s3 cp deploy.zip s3://${{ env.S3_BUCKET }}/deploy-${{ steps.version.outputs.deploy_id }}.zip
 
     - name: Create application version
       run: |
-        VERSION_LABEL="v-${{ github.run_number }}"
         aws elasticbeanstalk create-application-version \
           --application-name ${{ env.EB_APP_NAME }} \
-          --version-label ${VERSION_LABEL} \
-          --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=deploy.zip
+          --version-label ${{ steps.version.outputs.version_label }} \
+          --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=deploy-${{ steps.version.outputs.deploy_id }}.zip
 
     - name: Update environment
       run: |
-        VERSION_LABEL="v-${{ github.run_number }}"
         aws elasticbeanstalk update-environment \
           --environment-name ${{ env.EB_ENV_NAME }} \
-          --version-label ${VERSION_LABEL}
+          --version-label ${{ steps.version.outputs.version_label }}
