@@ -45,8 +45,7 @@ jobs:
 
     - name: Create application version
       run: |
-        TIMESTAMP=$(date +%Y%m%d%H%M%S)
-        VERSION_LABEL="v-${TIMESTAMP}"
+        VERSION_LABEL="v-${{ github.run_number }}"
         aws elasticbeanstalk create-application-version \
           --application-name ${{ env.EB_APP_NAME }} \
           --version-label ${VERSION_LABEL} \
@@ -54,7 +53,7 @@ jobs:
 
     - name: Update environment
       run: |
-        VERSION_LABEL="v-${TIMESTAMP}"
+        VERSION_LABEL="v-${{ github.run_number }}"
         aws elasticbeanstalk update-environment \
           --environment-name ${{ env.EB_ENV_NAME }} \
           --version-label ${VERSION_LABEL}
