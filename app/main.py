@@ -5,8 +5,8 @@ import os
 
 app = FastAPI(title="Leaderboard API", version="1.0")
 
-app.include_router(leaderboard.router, prefix="/api/leaderboard")
-app.include_router(session.router, prefix="/api/session")
+# app.include_router(leaderboard.router, prefix="/api/leaderboard")
+# app.include_router(session.router, prefix="/api/session")
 
 # @app.on_event("startup")
 # async def startup():
