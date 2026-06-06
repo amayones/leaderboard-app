@@ -1,5 +1,6 @@
 fastapi==0.115.11
 uvicorn[standard]==0.34.0
+gunicorn
 sqlalchemy==2.0.36
 psycopg2-binary==2.9.10
 redis==5.2.1
