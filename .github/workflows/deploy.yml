@@ -54,7 +54,6 @@ jobs:
 
     - name: Update environment
       run: |
-        TIMESTAMP=$(date +%Y%m%d%H%M%S)
         VERSION_LABEL="v-${TIMESTAMP}"
         aws elasticbeanstalk update-environment \
           --environment-name ${{ env.EB_ENV_NAME }} \
